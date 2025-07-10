@@ -1,0 +1,23 @@
+
+# Enable and start the PostgreSQL service
+sudo systemctl enable postgresql
+sudo systemctl start postgresql
+
+# Check service status
+sudo systemctl status postgresql
+
+#: login to postgress user
+sudo -i -u postgres
+psql
+
+-- Create a user with password
+CREATE USER youruser WITH PASSWORD 'yourpassword';
+
+-- Create a database owned by the new user
+CREATE DATABASE yourdb OWNER youruser;
+
+-- Give your user permission to create tables, etc.
+GRANT ALL PRIVILEGES ON DATABASE yourdb TO youruser;
+
+\q  -- Exit psql
+exit  -- Exit postgres user
