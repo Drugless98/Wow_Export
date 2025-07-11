@@ -13,7 +13,10 @@ def main():
     main_object.set_AH_id(392)
 
     import json
-    print(json.dumps(main_object.get_AH_item(52722)))
+
+
+    #main_object.write_json(json.dumps(main_object.get_all_items_regions(14), indent=2))
+    main_object.update_item_data()
     
     
     

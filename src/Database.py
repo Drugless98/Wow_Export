@@ -24,9 +24,8 @@ class Postgress:
         
     def run_local_sql(self):
         #: Manuel input file, to dynamicly run seems unsafe
-        FILE_TO_RUN = "Create_auctionhouses.sql"
+        FILE_TO_RUN = "Create_Item_data.sql"
         PATH = os.path.join(os.path.dirname(__file__), "Queries", "Table_Creations", FILE_TO_RUN)
-        
         
         with open(PATH, "r") as sql_file:
             self.cur.execute(sql_file.read())
@@ -34,7 +33,35 @@ class Postgress:
         
     def run_query(self, query):
         self.cur.execute(query)
-        return self.cur.fetchall()
+        self.cur.connection.commit()
+    
+    def add_item_data(self, id, market_value, petSpeciesId, quantity, avg_sale_price, sale_rate, sold_perday):
+        try:
+            sale_rate = float(sale_rate) if sale_rate is not None else 0.0
+            sold_perday = float(sold_perday) if sold_perday is not None else 0.0
+
+            self.cur.execute("""
+                INSERT INTO
+                    item_data (item_id, marketvalue, petSpeciesId, quantity, avg_sale_price, sale_rate, sold_perday)
+                VALUES
+                    (%s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT
+                    (item_id) DO UPDATE
+                SET
+                    marketvalue    = EXCLUDED.marketvalue,
+                    petSpeciesId   = EXCLUDED.petSpeciesId,
+                    quantity       = EXCLUDED.quantity,
+                    avg_sale_price = EXCLUDED.avg_sale_price,
+                    sale_rate      = EXCLUDED.sale_rate,
+                    sold_perday    = EXCLUDED.sold_perday
+            """, (id, market_value, petSpeciesId, quantity, avg_sale_price, sale_rate, sold_perday))
+            self.conn.commit()
+
+        except Exception as e:
+            self.conn.rollback()  # Reset the connection so the next query can work
+            print(f"❌ failed: {e}")
+            print(id, market_value, petSpeciesId, quantity, avg_sale_price, sale_rate, sold_perday)
+
     
     def add_region(self, id, name, prefix, version):
         self.cur.execute("""
@@ -50,7 +77,6 @@ class Postgress:
                 game_version = EXCLUDED.game_version;
             """, (id, name, prefix, version))
         self.conn.commit()
-
         
     def add_realm(self, id, region_id, realm_name, locale):
         self.cur.execute("""
@@ -112,3 +138,7 @@ class Postgress:
         rows = self.cur.fetchall()
         headers = [desc[0] for desc in self.cur.description]
         print(tabulate(rows, headers=headers, tablefmt="pretty"))
+
+if __name__ == "__main__":
+    p = Postgress()
+    p.run_query("ALTER TABLE item_data ALTER COLUMN avg_sale_price TYPE BIGINT;")
