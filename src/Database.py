@@ -82,6 +82,30 @@ class Postgress:
             """, (id, realm_id, faction))
         self.conn.commit()
         
+    def show_all_region_data(self, region_id):
+        from tabulate import tabulate
+        self.cur.execute("""
+            SELECT 
+                regions.region_name,
+                regions.game_version,
+                realms.realm_name,
+                realms.locale,
+                auctionhouses.faction,
+                auctionhouses.id   
+            FROM 
+                regions
+            JOIN
+                realms ON regions.id = realms.region_id 
+            JOIN
+                auctionhouses ON realms.id = auctionhouses.realm_id
+            WHERE
+                regions.id = %s;      
+            """, (region_id,))
+        rows = self.cur.fetchall()
+        headers = [desc[0] for desc in self.cur.description]
+        print(tabulate(rows, headers=headers, tablefmt="pretty"))
+        
+        
     def show_table(self, table_name):
         from tabulate import tabulate
         self.cur.execute(f"SELECT * FROM {table_name};")

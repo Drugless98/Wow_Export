@@ -7,6 +7,13 @@ class Main_Controller:
     def __init__(self):
         self.Postgress_DB   = Postgress()
         self.Tsm_api        = API() 
+
+    #: SETTERS
+    def set_AH_id(self, ah_id): self.Tsm_api.set_AH(ah_id)
+
+    #: GETTERS
+    def get_AH_item(self, item_id): return self.Tsm_api.get_item(item_id)
+
         
     def update_realm_data(self):
         from json import loads
