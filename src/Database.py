@@ -24,8 +24,15 @@ class Postgress:
         
     def run_local_sql(self):
         #: Manuel input file, to dynamicly run seems unsafe
-        FILE_TO_RUN = "Create_Item_data.sql"
+        FILE_TO_RUN = "Create_Item_prices.sql"
         PATH = os.path.join(os.path.dirname(__file__), "Queries", "Table_Creations", FILE_TO_RUN)
+        
+        with open(PATH, "r") as sql_file:
+            self.cur.execute(sql_file.read())
+            self.cur.connection.commit()
+    
+    def run_view_sql(self, name):
+        PATH = os.path.join(os.path.dirname(__file__), "Queries", "View_Creations", name)
         
         with open(PATH, "r") as sql_file:
             self.cur.execute(sql_file.read())
@@ -35,26 +42,46 @@ class Postgress:
         self.cur.execute(query)
         self.cur.connection.commit()
     
-    def add_item_data(self, id, market_value, petSpeciesId, quantity, avg_sale_price, sale_rate, sold_perday):
+    def get_query(self, query):
+        self.cur.execute(query)
+        return [i[0] for i in self.cur.fetchall() if i[0]]
+        
+    def add_item(self, id, name, rarety, vendor_sell, vendor_buy):
+        self.cur.execute("""
+            INSERT INTO
+                regions (id, name, rarety, vendor_sell_price, vendor_buy_price)
+            VALUES 
+                (%s, %s, %s, %s, %s)
+            ON CONFLICT
+                (id) DO UPDATE
+            SET
+                name        = EXCLUDED.name
+                rarety      = EXCLUDED.rarety,
+                vendor_sell_price = EXCLUDED.vendor_sell_price,
+                vendor_buy_price = EXCLUDED.vendor_buy_price;
+            """, (id, name, int(rarety), vendor_sell, vendor_buy))
+        self.conn.commit()
+        
+    
+    def add_item_price_data(self, id, market_value, petSpeciesId, quantity, avg_sale_price, sale_rate, sold_perday):
         try:
             sale_rate = float(sale_rate) if sale_rate is not None else 0.0
             sold_perday = float(sold_perday) if sold_perday is not None else 0.0
 
             self.cur.execute("""
                 INSERT INTO
-                    item_data (item_id, marketvalue, petSpeciesId, quantity, avg_sale_price, sale_rate, sold_perday)
+                    item_data (item_id, marketvalue, quantity, avg_sale_price, sale_rate, sold_perday)
                 VALUES
-                    (%s, %s, %s, %s, %s, %s, %s)
+                    (%s, %s, %s, %s, %s, %s)
                 ON CONFLICT
                     (item_id) DO UPDATE
                 SET
                     marketvalue    = EXCLUDED.marketvalue,
-                    petSpeciesId   = EXCLUDED.petSpeciesId,
                     quantity       = EXCLUDED.quantity,
                     avg_sale_price = EXCLUDED.avg_sale_price,
                     sale_rate      = EXCLUDED.sale_rate,
                     sold_perday    = EXCLUDED.sold_perday
-            """, (id, market_value, petSpeciesId, quantity, avg_sale_price, sale_rate, sold_perday))
+            """, (id, market_value, quantity, avg_sale_price, sale_rate, sold_perday))
             self.conn.commit()
 
         except Exception as e:

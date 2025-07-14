@@ -1,6 +1,7 @@
-CREATE TABLE IF NOT EXISTS Items (
-    id              INTEGER PRIMARY KEY,
-    petSpeciesId    TEXT,
-    minBuyout       INTEGER,
-    market_value    INTEGER    
+CREATE TABLE IF NOT EXISTS items (
+    id                INTEGER PRIMARY KEY,
+    name              TEXT,
+    rarety            INTEGER,
+    vendor_sell_price BIGINT,
+    vendor_buy_price  BIGINT
 )

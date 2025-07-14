@@ -57,7 +57,14 @@ class API:
         
         response = requests.get(f"{self.Price_base_path}/{self.AuctionHouse_id}", headers=self.headers)
         if response.status_code == 200:
-            return json.loads(response.content)
+            loaded = json.loads(response.content)
+            return_dict = {}
+            for item in loaded:
+                return_dict[item["itemId"]] = {
+                    "minBuyout" : item["minBuyout"],
+                    "quantity"  : item["quantity"],
+                }
+            return return_dict
         else:
             return f"Error code: {response.status_code}"
     
@@ -68,9 +75,18 @@ class API:
         
         response = requests.get(f"https://pricing-api.tradeskillmaster.com/region/{self.Region_id}", headers=self.headers)
         if response.status_code == 200:
-            return json.loads(response.content)
+            loaded = json.loads(response.content)
+            return_dict = {}
+            for item in loaded:
+                return_dict[item["itemId"]] = {
+                    "marketValue"   : item["marketValue"],
+                    "avgSalePrice"  : item["avgSalePrice"],
+                    "saleRate"      : item["saleRate"],
+                    "sold_perday"   : item["soldPerDay"]
+                }
+            return return_dict
         else:
-            return f"Error code: {response.status_code}"
+            return None
         
 
 
