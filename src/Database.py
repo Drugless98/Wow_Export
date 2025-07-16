@@ -12,7 +12,7 @@ class Postgress:
         try:
             #Connect to DB
             self.conn = psycopg2.connect(
-                host        = "37.187.252.56",
+                host        = os.getenv("HOST"),
                 port        = 5432,
                 database    = "wowdata",
                 user        = os.getenv("DB_USER"),

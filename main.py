@@ -19,10 +19,8 @@ def main():
 
     #main_object.Postgress_DB.run_view_sql("Excel_View_Items.sql")
     #main_object.Postgress_DB.show_table("excel_export")
-    
-    print(main_object.Postgress_DB.get_query("SELECT * FROM items WHERE items.name LIKE '%M%'; JOIN "))
 
-    #main_object.update_item_data_ASYNC()
+    main_object.update_item_data_ASYNC()
         
     #items_ids = main_object.Postgress_DB.get_query("SELECT item_id FROM item_prices ip LEFT JOIN items i ON ip.item_id = i.id WHERE i.id IS NULL")
     #main_object.DB_add_items(items_ids)
@@ -30,7 +28,4 @@ def main():
     
     
 if __name__ == "__main__":
-    import time
-    while True:
-        main()
-        time.sleep(900)
+    main()

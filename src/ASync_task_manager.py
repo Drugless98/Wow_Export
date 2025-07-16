@@ -12,7 +12,7 @@ class Async_Postgress:
     
     async def connect(self):
         self.Connection_Pool = await asyncpg.create_pool(
-            host        = "37.187.252.56",
+            host        = os.getenv("HOST"),
             port        = 5432,
             database    = "wowdata",
             user        = os.getenv("DB_USER"),
