@@ -2,9 +2,9 @@ import os
 import asyncpg
 
 try:    #: from main.py
-    from src.Objects.Item_Attributes import Item, Rarity
+    from src.Objects.Item_Attributes import Item, Item_prices
 except: #: from self
-    from Objects.Item_Attributes import Item, Rarity
+    from Objects.Item_Attributes import Item, Item_prices
      
 class Async_Postgress:
     def __init__(self):
@@ -20,6 +20,20 @@ class Async_Postgress:
             min_size    = 1,
             max_size    = 50
         )
+        
+    async def add_item_price_hist(self, item: Item_prices):
+        from datetime import datetime
+        async with self.Connection_Pool.acquire() as conn:
+            await conn.execute("""
+                INSERT INTO
+                    price_history (item_id, item_price, time) 
+                VALUES
+                    ($1, $2, $3)
+                ON CONFLICT
+                    (id) DO UPDATE
+                SET
+                    item_price    = EXCLUDED.item_price  
+            """, item.id, item.min_buyout, datetime.now().strftime("%Y-%m-%d|%H:%M"))
         
     async def add_item_data(self, item:Item):
         async with self.Connection_Pool.acquire() as conn:

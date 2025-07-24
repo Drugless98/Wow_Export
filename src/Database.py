@@ -24,7 +24,7 @@ class Postgress:
         
     def run_local_sql(self):
         #: Manuel input file, to dynamicly run seems unsafe
-        FILE_TO_RUN = "Create_Item_prices.sql"
+        FILE_TO_RUN = "Create_itemprices_history.sql"
         PATH = os.path.join(os.path.dirname(__file__), "Queries", "Table_Creations", FILE_TO_RUN)
         
         with open(PATH, "r") as sql_file:
@@ -157,12 +157,35 @@ class Postgress:
         rows = self.cur.fetchall()
         headers = [desc[0] for desc in self.cur.description]
         print(tabulate(rows, headers=headers, tablefmt="pretty"))
+    
+    def to_csv(self, table_name, limit=False):
+        import csv 
+        limitter = " LIMIT 1000" if limit else ""
+
+        print("run QUERY")
+        self.cur.execute(f"SELECT * FROM {table_name}{limitter} WHERE item_id = 72096;")
         
-        
-    def show_table(self, table_name):
-        from tabulate import tabulate
-        self.cur.execute(f"SELECT * FROM {table_name};")
+        print("Fetch")
         rows = self.cur.fetchall()
+        colnames = [desc[0] for desc in self.cur.description]
+
+        print("To CSV")
+        with open("Exported.csv", mode="w", newline='', encoding="utf-8") as file:
+            writer = csv.writer(file)
+            writer.writerow(colnames)  # write headers
+            writer.writerows(rows)     # write data
+        
+    def show_table(self, table_name, limit=False):
+        from tabulate import tabulate
+        
+        limitter = "LIMIT 1000" if limit else ""
+        print("run QUERY")
+        self.cur.execute(f"SELECT * FROM {table_name}{limitter};")
+        
+        print("Fetch")
+        rows = self.cur.fetchall()
+        
+        print("Tabulate")
         headers = [desc[0] for desc in self.cur.description]
         print(tabulate(rows, headers=headers, tablefmt="pretty"))
 

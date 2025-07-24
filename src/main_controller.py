@@ -113,6 +113,8 @@ class Main_Controller:
                 sale_rate=item_region_data[item_key]["saleRate"],
                 sold_perday=item_region_data[item_key]["sold_perday"]
             ) for item_key in item_ah_data.keys() if item_key in item_region_data]
+            
+        self.Update_data = update_data
         asyncio.run(run_async(update_data, region_exists))
         
     def DB_add_items(self, items_to_add: list[int]):
@@ -148,7 +150,27 @@ class Main_Controller:
             await self.async_postgress.Connection_Pool.close()
         asyncio.run(run_async(items_to_add))
 
-            
+    def update_item_price_hist_ASYNC(self):
+        import asyncio
+        from src.Objects.Item_Attributes import Item_prices
+
+    #: Start the Async loop
+        async def run_async(item_data: list[Item_prices]):
+            await self.async_postgress.connect()
+
+            tasks = []
+            total = len(item_data)
+
+            for idx, item in enumerate(item_data, start=1):
+                task = self.async_postgress.add_item_price_hist(item)
+                async def wrapped_task(t=task, i=idx, n=total):
+                    await t
+                    print(f"{i} / {n}")
+                tasks.append(wrapped_task())
+
+            await asyncio.gather(*tasks)
+            await self.async_postgress.Connection_Pool.close()
+        asyncio.run(run_async(self.Update_data))
         
         
 
