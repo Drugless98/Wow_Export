@@ -45,6 +45,10 @@ class Postgress:
     def get_query(self, query):
         self.cur.execute(query)
         return [i[0] for i in self.cur.fetchall() if i[0]]
+    
+    def get_table_data(self, query):
+        self.cur.execute(query)
+        return self.cur.fetchall()
         
     def add_item(self, id, name, rarety, vendor_sell, vendor_buy):
         self.cur.execute("""
