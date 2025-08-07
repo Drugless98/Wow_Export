@@ -22,8 +22,12 @@ def main():
     # main_object.update_item_data_ASYNC()
     # main_object.update_item_price_hist_ASYNC()
     
+    from datetime import datetime, timedelta
+
+    now = datetime.now() + timedelta(hours=2)
+    
     from datetime import datetime
-    headers = [f"Updated: {datetime.now().strftime('%H:%M')}","name","vendor_sell_price","vendor_buy_price","marketvalue","quantity","avg_sale_price","sale_rate","sold_perday","min_buyout"]
+    headers = [f"Updated: {now.strftime('%H:%M')}","name","vendor_sell_price","vendor_buy_price","marketvalue","quantity","avg_sale_price","sale_rate","sold_perday","min_buyout"]
     data = main_object.Postgress_DB.get_table_data("SELECT * FROM excel_export")
     pandas_data_dict = {}
     
