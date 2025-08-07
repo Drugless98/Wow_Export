@@ -12,21 +12,15 @@ def main():
     main_object.set_AH_id(392)
 
     import json
-
-    #main_object.Postgress_DB.run_query("DROP TABLE item_prices")
-    #main_object.Postgress_DB.run_local_sql()
-    #main_object.update_item_data_ASYNC()
-    #main_object.Postgress_DB.run_local_sql()
     
-    #main_object.Postgress_DB.show_table("excel_export")
-
-    #main_object.update_item_data_ASYNC()
-    #main_object.update_item_price_hist_ASYNC()
+    items_missing_in_itemsTable = main_object.Postgress_DB.get_missing_item_data()
+    main_object.DB_add_items(items_missing_in_itemsTable)
+    
+    main_object.update_item_data_ASYNC()
+    main_object.update_item_price_hist_ASYNC()
         
     #items_ids = main_object.Postgress_DB.get_query("SELECT item_id FROM item_prices ip LEFT JOIN items i ON ip.item_id = i.id WHERE i.id IS NULL")
     #main_object.DB_add_items(items_ids)
-    
-    main_object.Postgress_DB.to_csv("price_history")
     
     
     
@@ -35,7 +29,11 @@ if __name__ == "__main__":
     import time
     
     TIMEINTERVAL = 900 #: 15 min
-    
-    main()
+    while True:
+        if datetime.now().minute % 15 == 0: #At min 00, 15, 30 and 45
+            print("Started to update")
+            main()
+            print(f"Done updating at: {datetime.now()}")
+        time.sleep(60)    
         
     
