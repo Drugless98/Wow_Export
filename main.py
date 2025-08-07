@@ -16,14 +16,14 @@ def main():
     GSheet = GSheet_Controller()
     main_object.set_AH_id(392)
 
-    items_missing_in_itemsTable = main_object.Postgress_DB.get_missing_item_data()
-    main_object.DB_add_items(items_missing_in_itemsTable)
+    # items_missing_in_itemsTable = main_object.Postgress_DB.get_missing_item_data()
+    # main_object.DB_add_items(items_missing_in_itemsTable)
     
-    main_object.update_item_data_ASYNC()
-    main_object.update_item_price_hist_ASYNC()
+    # main_object.update_item_data_ASYNC()
+    # main_object.update_item_price_hist_ASYNC()
     
     from datetime import datetime
-    headers = [f"Updated: {datetime.now().strftime("%H:%M")}","name","vendor_sell_price","vendor_buy_price","marketvalue","quantity","avg_sale_price","sale_rate","sold_perday","min_buyout"]
+    headers = [f"Updated: {datetime.now().strftime('%H:%M')}","name","vendor_sell_price","vendor_buy_price","marketvalue","quantity","avg_sale_price","sale_rate","sold_perday","min_buyout"]
     data = main_object.Postgress_DB.get_table_data("SELECT * FROM excel_export")
     pandas_data_dict = {}
     
@@ -37,8 +37,8 @@ def main():
     df = pd.DataFrame(pandas_data_dict)
     GSheet.write_pd_toSheet(df)
     
-    items_ids = main_object.Postgress_DB.get_query("SELECT item_id FROM item_prices ip LEFT JOIN items i ON ip.item_id = i.id WHERE i.id IS NULL")
-    main_object.DB_add_items(items_ids)
+    # items_ids = main_object.Postgress_DB.get_query("SELECT item_id FROM item_prices ip LEFT JOIN items i ON ip.item_id = i.id WHERE i.id IS NULL")
+    # main_object.DB_add_items(items_ids)
     
     
     

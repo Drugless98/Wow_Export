@@ -24,12 +24,16 @@ class GSheet_Controller:
         # Path to service account key file
         key_path = os.path.join(os.path.dirname(__file__), "key.json")
         
+        
+
+        
         spread = Spread(
             "Gehennas AH Gold Making",   # <-- REQUIRED first positional arg
             sheet="Current Price Export",
             creds=creds
         )
-        spread.df_to_sheet(df, index=False, start="A1", replace=True)
+        spread.sheet.clear()
+        spread.df_to_sheet(df, index=False, start="A1", replace=False)
         
         
 if __name__ == "__main__":
