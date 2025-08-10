@@ -16,11 +16,11 @@ def main():
     GSheet = GSheet_Controller()
     main_object.set_AH_id(392)
 
-    # items_missing_in_itemsTable = main_object.Postgress_DB.get_missing_item_data()
-    # main_object.DB_add_items(items_missing_in_itemsTable)
+    items_missing_in_itemsTable = main_object.Postgress_DB.get_missing_item_data()
+    main_object.DB_add_items(items_missing_in_itemsTable)
     
-    # main_object.update_item_data_ASYNC()
-    # main_object.update_item_price_hist_ASYNC()
+    main_object.update_item_data_ASYNC()
+    main_object.update_item_price_hist_ASYNC()
     
     from datetime import datetime, timedelta
 
@@ -41,8 +41,8 @@ def main():
     df = pd.DataFrame(pandas_data_dict)
     GSheet.write_pd_toSheet(df)
     
-    # items_ids = main_object.Postgress_DB.get_query("SELECT item_id FROM item_prices ip LEFT JOIN items i ON ip.item_id = i.id WHERE i.id IS NULL")
-    # main_object.DB_add_items(items_ids)
+    items_ids = main_object.Postgress_DB.get_query("SELECT item_id FROM item_prices ip LEFT JOIN items i ON ip.item_id = i.id WHERE i.id IS NULL")
+    main_object.DB_add_items(items_ids)
     
     
     
@@ -51,6 +51,7 @@ if __name__ == "__main__":
     import time
 
     main()    
+    print("done, Starting forever-loop")
     TIMEINTERVAL = 900 #: 15 min
     while True:
         if datetime.now().minute % 15 == 0: #At min 00, 15, 30 and 45

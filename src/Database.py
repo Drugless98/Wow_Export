@@ -193,16 +193,20 @@ class Postgress:
         headers = [desc[0] for desc in self.cur.description]
         print(tabulate(rows, headers=headers, tablefmt="pretty"))
 
-    def get_missing_item_data(self):
-        self.cur.execute("""
-            SELECT 
-                item_id 
-            FROM 
-                item_prices ip
-            LEFT JOIN
-                items i ON ip.item_id = i.id
-            WHERE
-                i.id IS NULL AND ip.item_id IS NOT NULL;
-                """)
+    def get_missing_item_data(self, fullLoad = False):
+        if fullLoad:
+            self.cur.execute("SELECT id FROM items")
+        else:
+            self.cur.execute("""
+                SELECT 
+                    item_id 
+                FROM 
+                    item_prices ip
+                LEFT JOIN
+                    items i ON ip.item_id = i.id
+                WHERE
+                    i.id IS NULL AND ip.item_id IS NOT NULL;
+                    """)
+        
         currently_missing_items = self.cur.fetchall()
         return [i[0] for i in currently_missing_items]

@@ -32,24 +32,27 @@ class Async_Postgress:
                 ON CONFLICT
                     (id) DO UPDATE
                 SET
-                    item_price    = EXCLUDED.item_price  
-            """, item.id, item.min_buyout, datetime.now().strftime("%Y-%m-%d|%H:%M"))
+                    item_price    = EXCLUDED.item_price,
+                    time          = EXCLUDED.time  
+            """, item.id, item.min_buyout, datetime.now())
         
     async def add_item_data(self, item:Item):
         async with self.Connection_Pool.acquire() as conn:
             await conn.execute("""
                 INSERT INTO
-                    items (id, name, rarety, vendor_sell_price, vendor_buy_price) 
+                    items (id, name, rarety, vendor_sell_price, vendor_buy_price, class, subclass) 
                 VALUES
-                    ($1, $2, $3, $4, $5)
+                    ($1, $2, $3, $4, $5, $6, $7)
                 ON CONFLICT
                     (id) DO UPDATE
                 SET
                     name    = EXCLUDED.name,
                     rarety  = EXCLUDED.rarety,
                     vendor_sell_price   = EXCLUDED.vendor_sell_price,
-                    vendor_buy_price    = EXCLUDED.vendor_buy_price   
-            """, item.id, item.name, int(item.rarety), item.vendor_sell_price, item.vendor_buy_price)
+                    vendor_buy_price    = EXCLUDED.vendor_buy_price,
+                    class               = EXCLUDED.class,
+                    subclass            = EXCLUDED.subclass
+            """, item.id, item.name, int(item.rarety), item.vendor_sell_price, item.vendor_buy_price, item.ItemClass, item.itemSubClass)
         
     async def add_item_price_data(self, id, market_value, minBuyout, quantity, avg_sale_price, sale_rate, sold_perday):
         sale_rate = float(sale_rate) if sale_rate is not None else 0.0

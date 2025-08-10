@@ -144,6 +144,7 @@ class Main_Controller:
                     print(f"Inserted {i}/{n}")
 
                 tasks.append(wrapped_task())
+                print(f"Added task {idx}/{total}")
                 
             #: Gather and run all inserts
             await asyncio.gather(*tasks)
